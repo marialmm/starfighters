@@ -1,6 +1,6 @@
 import axios from "axios";
 
-import { userRepository } from "../repositories/userRepository.js";
+import { Fighters, userRepository } from "../repositories/userRepository.js";
 
 async function getUserStars(userName: string) {
     const URL = `https://api.github.com/users/${userName}/repos`;
@@ -9,12 +9,12 @@ async function getUserStars(userName: string) {
     userData.forEach((user: { stargazers_count: number }) => {
         stars += user.stargazers_count;
     });
-    return { stars };
+    return stars;
 }
 
 async function getUserInfo(username: string) {
-    const userRows = await userRepository.getUserByName(username);
-    let user: { username: string; wins: number; losses: number; draws: number };
+    const userRows: Fighters[] = await userRepository.getUserByName(username);
+    let user: Fighters;
     if (userRows.length === 0) {
         user = await userRepository.insertNewUser(username);
     } else {
@@ -25,18 +25,20 @@ async function getUserInfo(username: string) {
 }
 
 async function getRanking() {
-    const ranking = await userRepository.getUsers();
+    const ranking: Fighters[] = await userRepository.getUsers();
 
-    ranking.forEach((user: { id: number }) => delete user.id);
+    ranking.forEach((user: Fighters) => delete user.id);
 
     return { fighters: ranking };
 }
 
-export const userServices: {
+interface UserServices{
     getUserStars: Function;
     getUserInfo: Function;
     getRanking: Function;
-} = {
+}
+
+export const userServices: UserServices = {
     getUserStars,
     getUserInfo,
     getRanking,

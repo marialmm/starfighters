@@ -1,11 +1,21 @@
 import { Request, Response } from "express";
 import { battleServices } from "../services/battleServices.js";
 
-export async function sendBattle(req: Request, res: Response) {
-    const { firstUser, secondUser }: { firstUser: string; secondUser: string } =
-        req.body;
+interface BattleBody {
+    firstUser: string;
+    secondUser: string;
+}
 
-    const result = await battleServices.createBattle(firstUser, secondUser);
+interface BattleResult {
+    winner: string;
+    loser: string;
+    draw: boolean;
+}
+
+export async function sendBattle(req: Request, res: Response) {
+    const { firstUser, secondUser }: BattleBody = req.body;
+
+    const result: BattleResult = await battleServices.createBattle(firstUser, secondUser);
 
     res.status(201).send(result);
 }

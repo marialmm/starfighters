@@ -1,13 +1,14 @@
 import { battleRepository } from "../repositories/battleRepository.js";
+import { Fighters } from "../repositories/userRepository.js";
 import { userServices } from "./userServices.js";
 
 async function createBattle(firstUser: string, secondUser: string) {
-    const firstUserStars = await userServices.getUserStars(firstUser);
-    const secondUserStars = await userServices.getUserStars(secondUser);
-    const firstUserInfo = await userServices.getUserInfo(firstUser);
-    const secondUserInfo = await userServices.getUserInfo(secondUser);
+    const firstUserStars: number = await userServices.getUserStars(firstUser);
+    const secondUserStars: number = await userServices.getUserStars(secondUser);
+    const firstUserInfo: Fighters = await userServices.getUserInfo(firstUser);
+    const secondUserInfo: Fighters = await userServices.getUserInfo(secondUser);
 
-    if (firstUserStars.stars > secondUserStars.stars) {
+    if (firstUserStars > secondUserStars) {
         await battleRepository.insertWin(firstUser, firstUserInfo.wins);
         await battleRepository.insertLoss(secondUser, secondUserInfo.losses);
         return {
@@ -15,7 +16,7 @@ async function createBattle(firstUser: string, secondUser: string) {
             loser: secondUser,
             draw: false,
         };
-    } else if (firstUserStars.stars < secondUserStars.stars) {
+    } else if (firstUserStars < secondUserStars) {
         await battleRepository.insertWin(secondUser, secondUserInfo.wins);
         await battleRepository.insertLoss(firstUser, firstUserInfo.losses);
         return {
@@ -34,6 +35,10 @@ async function createBattle(firstUser: string, secondUser: string) {
     }
 }
 
-export const battleServices: { createBattle: Function } = {
+interface BattleServices{
+    createBattle: Function
+}
+
+export const battleServices: BattleServices = {
     createBattle,
 };

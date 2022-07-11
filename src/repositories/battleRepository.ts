@@ -1,6 +1,9 @@
 import connection from "./../config/db.js";
+import { Fighters } from "./userRepository.js";
 
-async function insertWin(username: string, wins: number) {
+type insertResult = Partial<Fighters>;
+
+async function insertWin({username, wins}: insertResult) {
     await connection.query(
         `UPDATE fighters
         SET wins = $1
@@ -9,7 +12,7 @@ async function insertWin(username: string, wins: number) {
     );
 }
 
-async function insertDraw(username: string, draws: number) {
+async function insertDraw({username, draws}: insertResult) {
     await connection.query(
         `UPDATE fighters
         SET draws = $1
@@ -18,7 +21,7 @@ async function insertDraw(username: string, draws: number) {
     );
 }
 
-async function insertLoss(username: string, losses: number) {
+async function insertLoss({username, losses}: insertResult) {
     await connection.query(
         `UPDATE fighters
         SET losses = $1
@@ -27,11 +30,13 @@ async function insertLoss(username: string, losses: number) {
     );
 }
 
-export const battleRepository: {
+interface BattleRepository{
     insertWin: Function;
     insertDraw: Function;
     insertLoss: Function;
-} = {
+}
+
+export const battleRepository: BattleRepository = {
     insertWin,
     insertDraw,
     insertLoss,

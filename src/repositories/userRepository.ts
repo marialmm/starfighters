@@ -1,5 +1,13 @@
 import connection from "../config/db.js";
 
+export interface Fighters {
+    id: number;
+    username: string;
+    wins: number;
+    losses: number;
+    draws: number;
+}
+
 async function insertNewUser(username: string) {
     await connection.query(
         `INSERT INTO fighters ("username", "wins", "losses", "draws")
@@ -11,7 +19,7 @@ async function insertNewUser(username: string) {
 }
 
 async function getUserByName(username: string) {
-    const { rows } = await connection.query(
+    const { rows } = await connection.query<Fighters>(
         `SELECT * FROM fighters
         WHERE username = $1`,
         [username]
@@ -21,7 +29,7 @@ async function getUserByName(username: string) {
 }
 
 async function getUsers(){
-    const {rows} = await connection.query(
+    const {rows} = await connection.query<Fighters>(
         `SELECT * FROM fighters
         ORDER BY wins DESC, draws DESC`
     );
